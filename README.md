@@ -1,3 +1,6 @@
+> This is a fork for misskey.buicha.jp (ぶいちゃすきー). Changes: see [buicha/README.md](./buicha/README.md)
+> Upstream: https://github.com/misskey-dev/misskey
+
 <div align="center">
 <a href="https://misskey-hub.net">
 	<img src="./assets/title_float.svg" alt="Misskey logo" style="border-radius:50%" width="300"/>

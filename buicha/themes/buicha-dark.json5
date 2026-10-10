@@ -1,0 +1,27 @@
+{
+	id: 'a3d95e18-7c40-4b62-8f1d-2c6e9b0a41d7',
+
+	name: 'Buicha Dark',
+	author: '@buichajp',
+	desc: 'ぶいちゃすきー ダークテーマ',
+
+	base: 'dark',
+
+	props: {
+		accent: '#c8f031',
+		bg: '#0e0f0c',
+		fg: '#edeeea',
+		fgHighlighted: '#ffffff',
+		fgOnAccent: '#0e0f0c',
+		fgOnWhite: '#4e6b00',
+		divider: 'rgba(237, 238, 234, 0.1)',
+		panel: '#171814',
+		header: ':alpha<0.7<@panel',
+		navBg: '#171814',
+		renote: '#9be7a8',
+		hashtag: '#a8d8ff',
+		link: '#c8f031',
+		mention: '@accent',
+		mentionMe: '#ffd166',
+	},
+}

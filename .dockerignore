@@ -28,3 +28,8 @@ fluent-emojis/
 .idea/
 packages/*/.vscode/
 packages/backend/test/compose.yml
+
+# buicha: tooling and local secrets must never enter the build context
+buicha/
+**/.deploy.env
+**/.env

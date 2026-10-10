@@ -1,0 +1,25 @@
+{
+	id: '6f1c2a54-3b7e-4d8a-9c21-5e0a7b4d93f1',
+
+	name: 'Buicha Light',
+	author: '@buichajp',
+	desc: 'ぶいちゃすきー ライトテーマ',
+
+	base: 'light',
+
+	props: {
+		accent: '#4e6b00',
+		bg: '#edeeea',
+		fg: '#0e0f0c',
+		fgOnAccent: '#ffffff',
+		fgOnWhite: '@accent',
+		divider: 'rgba(14, 15, 12, 0.08)',
+		panel: '#ffffff',
+		header: ':alpha<0.7<@panel',
+		navBg: '#ffffff',
+		renote: '#4e6b00',
+		hashtag: '#4e6b00',
+		link: '#3f5700',
+		mentionMe: '#9a5b00',
+	},
+}
