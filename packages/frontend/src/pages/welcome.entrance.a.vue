@@ -273,7 +273,7 @@ function signup() {
 	box-sizing: border-box;
 }
 
-.root a {
+:where(.root) a {
 	color: inherit;
 	text-decoration: none;
 }
@@ -838,18 +838,21 @@ function signup() {
 .panel {
 	min-width: 0;
 	overflow: clip;
-	background: var(--bk-white);
-	border: 1px solid var(--bk-line);
+	background: var(--MI_THEME-panel);
+	color: var(--MI_THEME-fg);
+	border: 1px solid var(--MI_THEME-divider);
 	border-radius: 6px;
 }
 
 .panelHead {
 	padding: 12px 16px;
-	border-bottom: 1px solid var(--bk-line);
+	color: var(--MI_THEME-fg);
+	border-bottom: 1px solid var(--MI_THEME-divider);
 }
 
 .tlBody {
 	height: 400px;
+	background: var(--MI_THEME-bg);
 	overflow: auto;
 }
 
