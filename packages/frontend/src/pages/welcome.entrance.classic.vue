@@ -165,7 +165,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="$style.inner">
 			<div :class="[$style.mono, $style.label]">04 / NOW</div>
 			<h2 :class="$style.h2">いまのぶいちゃすきー</h2>
-			<div v-if="stats" :class="$style.stats">
+			<div v-if="stats && meta.clientOptions.showActivitiesForVisitor !== false" :class="$style.stats">
 				<div :class="$style.stat">
 					<div :class="$style.statNum"><MkNumber :value="stats.originalUsersCount"/></div>
 					<div :class="[$style.mono, $style.statCap]">{{ i18n.ts.users }} / USERS</div>
@@ -176,13 +176,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</div>
 			<div :class="$style.panels">
-				<div v-if="meta.policies.ltlAvailable" :class="$style.panel">
+				<div v-if="meta.policies.ltlAvailable && meta.clientOptions.showTimelineForVisitor !== false" :class="$style.panel">
 					<div :class="[$style.mono, $style.panelHead]">{{ i18n.ts.letsLookAtTimeline }}</div>
 					<div :class="$style.tlBody">
-						<MkTimeline src="local"/>
+						<MkStreamingNotesTimeline src="local"/>
 					</div>
 				</div>
-				<div :class="$style.panel">
+				<div v-if="meta.clientOptions.showActivitiesForVisitor !== false" :class="$style.panel">
 					<XActiveUsersChart/>
 				</div>
 			</div>
@@ -208,7 +208,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import MkNumber from '@/components/MkNumber.vue';
-import MkTimeline from '@/components/MkTimeline.vue';
+import MkStreamingNotesTimeline from '@/components/MkStreamingNotesTimeline.vue';
 import XActiveUsersChart from '@/components/MkVisitorDashboard.ActiveUsersChart.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import XSigninDialog from '@/components/MkSigninDialog.vue';
@@ -223,9 +223,11 @@ import { publicServices, inviteOnlyServices, statusUrl, portalUrl } from '@/buic
 
 const stats = ref<Misskey.entities.StatsResponse | null>(null);
 
-misskeyApi('stats', {}).then((res) => {
-	stats.value = res;
-});
+if (meta.clientOptions.showActivitiesForVisitor !== false) {
+	misskeyApi('stats', {}).then((res) => {
+		stats.value = res;
+	});
+}
 
 function signin() {
 	const { dispose } = os.popup(XSigninDialog, {
@@ -318,12 +320,14 @@ function signup() {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	pointer-events: none; // 装飾レイヤ。ホイール操作を透過させる (issue #17680)
 }
 
 .heroPattern {
 	position: absolute;
 	inset: 0;
 	overflow: clip;
+	pointer-events: none; // 装飾レイヤ (issue #17680)
 }
 
 .pCircle {
@@ -369,6 +373,7 @@ function signup() {
 	position: absolute;
 	inset: 0;
 	background: rgba(14, 15, 12, 0.5);
+	pointer-events: none; // 装飾レイヤ (issue #17680)
 }
 
 .heroTop,
