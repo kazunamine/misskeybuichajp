@@ -40,7 +40,7 @@ GitHub 上: https://github.com/misskey-dev/misskey/compare/2026.10.0...kazunamin
 
 ## ライセンス
 
-Misskey は GNU Affero General Public License v3.0 (AGPL-3.0) で公開されており、Copyright © 2014-2025 syuilo and contributors の著作物です。このフォークも同じく AGPL-3.0 で提供します。全文はリポジトリルートの `COPYING` を参照してください。
+Misskey は GNU Affero General Public License v3.0 (AGPL-3.0) で公開されており、Copyright © 2014-2026 syuilo and contributors の著作物です。このフォークも同じく AGPL-3.0 で提供します。全文はリポジトリルートの `COPYING` を参照してください。
 
 AGPL-3.0 に基づき、このイメージでネットワーク越しにサービスを提供する場合は、利用者に対応するソース（このフォークの該当コミット）を提供する必要があります。
 
