@@ -8,18 +8,90 @@
 	base: 'light',
 
 	props: {
+		// brand
 		accent: '#4e6b00',
+		accentedBg: ':alpha<0.15<@accent',
+		love: '#dd2e44',
+		focus: ':alpha<0.3<@accent',
+		indicator: '@accent',
+
+		// base
 		bg: '#edeeea',
 		fg: '#0e0f0c',
+		fgHighlighted: '#000000',
 		fgOnAccent: '#ffffff',
 		fgOnWhite: '@accent',
 		divider: 'rgba(14, 15, 12, 0.08)',
+
+		// panels
 		panel: '#ffffff',
+		panelHighlight: ':darken<3<@panel',
+		panelHeaderBg: '@panel',
+		panelHeaderFg: '@fg',
+		panelBorder: '" solid 1px var(--MI_THEME-divider)',
+		windowHeader: ':alpha<0.8<@panel',
+		popup: '#ffffff',
+		shadow: 'rgba(14, 15, 12, 0.08)',
+		modalBg: 'rgba(14, 15, 12, 0.3)',
+
+		// header / nav (glass)
 		header: ':alpha<0.7<@panel',
-		navBg: '#ffffff',
-		renote: '#4e6b00',
-		hashtag: '#4e6b00',
+		navBg: ':alpha<0.75<@panel',
+		navFg: '@fg',
+		navActive: '@accent',
+		navIndicator: '@accent',
+		pageHeaderBg: ':alpha<0.7<@bg',
+		pageHeaderFg: '@fg',
+
+		// text colors
 		link: '#3f5700',
+		hashtag: '#4e6b00',
+		mention: '@accent',
 		mentionMe: '#9a5b00',
+		renote: '#4e6b00',
+
+		// scrollbar
+		scrollbarHandle: 'rgba(14, 15, 12, 0.2)',
+		scrollbarHandleHover: 'rgba(14, 15, 12, 0.4)',
+
+		dateLabelFg: '@fg',
+
+		// info
+		infoBg: '#e8eedb',
+		infoFg: '#3a4a1a',
+		infoWarnBg: '#fff0db',
+		infoWarnFg: '#7a5a1f',
+
+		folderHeaderBg: 'rgba(14, 15, 12, 0.05)',
+		folderHeaderHoverBg: 'rgba(14, 15, 12, 0.1)',
+
+		// buttons (no gradient; accent keeps white text readable)
+		buttonBg: ':darken<5<@panel',
+		buttonHoverBg: ':darken<10<@panel',
+		buttonGradateA: '@accent',
+		buttonGradateB: '@accent',
+
+		// switch (lime track, ink knob)
+		switchBg: 'rgba(14, 15, 12, 0.15)',
+		switchOffBg: 'rgba(14, 15, 12, 0.1)',
+		switchOffFg: '#ffffff',
+		switchOnBg: '#c8f031',
+		switchOnFg: '#0e0f0c',
+
+		inputBorder: 'rgba(14, 15, 12, 0.12)',
+		inputBorderHover: 'rgba(14, 15, 12, 0.25)',
+
+		badge: '#1e8fae',
+		messageBg: '@bg',
+		success: '#4e6b00',
+		error: '#d6322a',
+		warn: '#b87d00',
+
+		codeString: '#b98710',
+		codeNumber: '#0fbbbb',
+		codeBoolean: '#62b70c',
+
+		deckBg: ':darken<3<@bg',
+		htmlThemeColor: '@bg',
 	},
 }

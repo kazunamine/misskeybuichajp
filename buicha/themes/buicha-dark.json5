@@ -8,20 +8,90 @@
 	base: 'dark',
 
 	props: {
+		// brand
 		accent: '#c8f031',
+		accentedBg: ':alpha<0.15<@accent',
+		love: '#ff5c7a',
+		focus: ':alpha<0.3<@accent',
+		indicator: '@accent',
+
+		// base
 		bg: '#0e0f0c',
 		fg: '#edeeea',
 		fgHighlighted: '#ffffff',
 		fgOnAccent: '#0e0f0c',
 		fgOnWhite: '#4e6b00',
 		divider: 'rgba(237, 238, 234, 0.1)',
-		panel: '#171814',
+
+		// panels
+		panel: '#17181a',
+		panelHighlight: ':lighten<3<@panel',
+		panelHeaderBg: ':lighten<3<@panel',
+		panelHeaderFg: '@fg',
+		panelBorder: '" solid 1px var(--MI_THEME-divider)',
+		windowHeader: ':alpha<0.8<@panel',
+		popup: ':lighten<3<@panel',
+		shadow: 'rgba(0, 0, 0, 0.25)',
+		modalBg: 'rgba(0, 0, 0, 0.55)',
+
+		// header / nav (glass)
 		header: ':alpha<0.7<@panel',
-		navBg: '#171814',
-		renote: '#9be7a8',
-		hashtag: '#a8d8ff',
+		navBg: ':alpha<0.75<@panel',
+		navFg: '@fg',
+		navActive: '@accent',
+		navIndicator: '@accent',
+		pageHeaderBg: ':alpha<0.7<@bg',
+		pageHeaderFg: '@fg',
+
+		// text colors
 		link: '#c8f031',
+		hashtag: '#a8d8ff',
 		mention: '@accent',
 		mentionMe: '#ffd166',
+		renote: '#9be7a8',
+
+		// scrollbar
+		scrollbarHandle: 'rgba(237, 238, 234, 0.2)',
+		scrollbarHandleHover: 'rgba(237, 238, 234, 0.4)',
+
+		dateLabelFg: '@fg',
+
+		// info
+		infoBg: '#1c2733',
+		infoFg: '#e6eef5',
+		infoWarnBg: '#3a2f18',
+		infoWarnFg: '#ffbd3e',
+
+		folderHeaderBg: 'rgba(237, 238, 234, 0.05)',
+		folderHeaderHoverBg: 'rgba(237, 238, 234, 0.1)',
+
+		// buttons (no gradient)
+		buttonBg: ':lighten<5<@panel',
+		buttonHoverBg: ':lighten<10<@panel',
+		buttonGradateA: '@accent',
+		buttonGradateB: '@accent',
+
+		// switch
+		switchBg: 'rgba(237, 238, 234, 0.15)',
+		switchOffBg: 'rgba(237, 238, 234, 0.1)',
+		switchOffFg: ':alpha<0.8<@fg',
+		switchOnBg: '@accentedBg',
+		switchOnFg: '@accent',
+
+		inputBorder: 'rgba(237, 238, 234, 0.12)',
+		inputBorderHover: 'rgba(237, 238, 234, 0.25)',
+
+		badge: '#31b1ce',
+		messageBg: '@bg',
+		success: '#c8f031',
+		error: '#ff6b61',
+		warn: '#ecb637',
+
+		codeString: '#ffb675',
+		codeNumber: '#cfff9e',
+		codeBoolean: '#c59eff',
+
+		deckBg: '#0e0f0c',
+		htmlThemeColor: '@bg',
 	},
 }
