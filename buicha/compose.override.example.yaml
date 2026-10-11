@@ -9,4 +9,4 @@
 #   に戻し（override を削除でも可）、`docker compose up -d web` を実行する。
 services:
   web:
-    image: buicha/misskey:2025.5.0-buicha.1
+    image: buicha/misskey:2026.10.0-buicha.1

@@ -2,13 +2,13 @@
 
 misskey.buicha.jp（ぶいちゃすきー、VRChatter 向け Misskey）用の [Misskey](https://github.com/misskey-dev/misskey) フォークです。ログイン前画面をブランディングし、Buicha.jp のサービスポータルとして表示します。
 
-構成: upstream の固定タグ `2025.5.0` から `buicha` ブランチを作成し、本体ソースへ直接コミットしています（以前の overlay 方式から移行）。ビルド・デプロイ用のスクリプトやテーマはこの `buicha/` ディレクトリにあります。
+構成: upstream の固定タグ `2026.10.0` から `buicha` ブランチを作成し、本体ソースへ直接コミットしています（以前の overlay 方式から移行）。ビルド・デプロイ用のスクリプトやテーマはこの `buicha/` ディレクトリにあります。
 
 ## 改変ファイル
 
 | パス | 役割 |
 | --- | --- |
-| `packages/frontend/src/pages/welcome.entrance.a.vue` | ログイン前画面（upstream を置き換え） |
+| `packages/frontend/src/pages/welcome.entrance.classic.vue` | ログイン前画面（upstream の classic を置き換え） |
 | `packages/frontend/src/buicha/services.ts` | ポータルのサービス一覧データ（新規追加） |
 | `README.md` | 冒頭にフォークである旨を追記 |
 | `buicha/` | ビルド/デプロイスクリプト、テーマ、ドキュメント（新規追加） |
@@ -23,18 +23,20 @@ misskey.buicha.jp（ぶいちゃすきー、VRChatter 向け Misskey）用の [M
 | `compose.override.example.yaml` | compose 設定の例 |
 | `themes/buicha-light.json5`, `themes/buicha-dark.json5` | 管理画面で設定するテーマ（イメージには含まれない） |
 
+上流が entrance を classic / simple に分割したため、`classic` をぶいちゃすきーのデザインに差し替えています。管理画面で entrance のスタイルに `simple` を選ぶと、公式のログイン前画面になります。
+
 ## 上流との差分の見方
 
 ```sh
-git diff 2025.5.0..buicha -- packages/
+git diff 2026.10.0..buicha -- packages/
 ```
 
-GitHub 上: https://github.com/misskey-dev/misskey/compare/2025.5.0...kazunamine:misskeybuichajp:buicha
+GitHub 上: https://github.com/misskey-dev/misskey/compare/2026.10.0...kazunamine:misskeybuichajp:buicha
 
 ## 上流
 
 - ソース: https://github.com/misskey-dev/misskey
-- ベースタグ: `2025.5.0`
+- ベースタグ: `2026.10.0`
 
 ## ライセンス
 
@@ -79,8 +81,8 @@ BUICHA_REV=2 ./buicha/build.sh
 2. 内容確認と実行
 
    ```sh
-   ./buicha/deploy.sh --dry-run buicha/dist/misskey-2025.5.0-buicha.1.tar.gz
-   ./buicha/deploy.sh buicha/dist/misskey-2025.5.0-buicha.1.tar.gz
+   ./buicha/deploy.sh --dry-run buicha/dist/misskey-2026.10.0-buicha.1.tar.gz
+   ./buicha/deploy.sh buicha/dist/misskey-2026.10.0-buicha.1.tar.gz
    ```
 
 3. 表示される案内に従い、事前バックアップを取得したうえで compose の `web` の image を `buicha/misskey:<ver>-buicha.<rev>` に変更し、`docker compose up -d --no-deps web` で web のみ切り替える。元の image は必ず控えておく（ロールバック用）。
@@ -103,7 +105,7 @@ git checkout buicha
 git merge <新tag>
 ```
 
-1. コンフリクトを解消する。特に `packages/frontend/src/pages/` 配下（新しい版では `welcome.entrance.classic.vue` / `simple.vue` に分かれ、`entrancePageStyle` 設定が入る）に注意する
+1. コンフリクトを解消する。特に `packages/frontend/src/pages/welcome.entrance.classic.vue` に注意する（`simple.vue` は上流のまま）
 2. 上流のリリースノート（マイグレーション有無）を確認する
 3. `BUICHA_REV` を 1 に戻して `./buicha/build.sh` でビルドする
 4. DB バックアップのうえデプロイする
