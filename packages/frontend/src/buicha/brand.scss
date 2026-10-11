@@ -1,0 +1,113 @@
+/*
+ * ぶいちゃすきー (misskey.buicha.jp) brand layer for the logged-in Misskey UI.
+ *
+ * Purpose:
+ *   Swiss/grid feel: small radius, bold grotesque, flat accent (no gradients),
+ *   liquid-glass accent on the navbar and page header only.
+ *
+ * Policy:
+ *   Override-only. Nothing here is required for the app to work; if an upstream
+ *   change makes a selector miss, the UI just falls back to upstream styling.
+ *   CSS Modules class names are hashed in production (vite.config.ts generateScopedName),
+ *   so only global classes, data attributes and DOM structure are used as hooks.
+ *
+ * Check when following upstream (grep these):
+ *   - style.scss: :root --MI-radius, html font-family / .useSystemFont, :focus-visible, ._buttonGradate
+ *   - --MI_THEME-buttonGradateA/B usage (MkButton.vue .gradate, ui/_common_/navbar.vue .post,
+ *     ui/_common_/mobile-footer-menu.vue .post, MkPostForm.vue .submitInner)
+ *   - --MI-blur semantics (boot/common.ts: inline 'none' when the user disables blur)
+ *   - DOM structure: components/global/PageWithHeader.vue + MkStickyContainer.vue + MkPageHeader.vue
+ *     (header selector), ui/_common_/navbar.vue (.body > .bottom > button[data-testid="open-post-form"])
+ *   - Theme side: themes should also set buttonGradateA = buttonGradateB (belt and braces).
+ */
+
+:root {
+	// card / panel radius
+	--MI-radius: 6px;
+
+	// Flatten every 90deg A-to-B background in upstream
+	// components (MkButton gradate, navbar post, mobile footer post, MkPostForm submit).
+	// !important is needed because the theme writes these as inline styles on <html>.
+	--MI_THEME-buttonGradateA: var(--MI_THEME-accent) !important;
+	--MI_THEME-buttonGradateB: var(--MI_THEME-accent) !important;
+
+	// liquid glass parameters
+	--bk-glass-blur: blur(14px) saturate(180%);
+	--bk-glass-edge: rgba(255, 255, 255, 0.32);
+	--bk-glass-highlight: rgba(255, 255, 255, 0.4);
+}
+
+// ---- typography ------------------------------------------------------------
+html:not(.useSystemFont) {
+	font-family: "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+}
+
+// ---- flat accent buttons ---------------------------------------------------
+._buttonGradate {
+	background: var(--MI_THEME-accent);
+
+	&:not(:disabled):hover,
+	&:not(:disabled):active {
+		background: color-mix(in srgb, var(--MI_THEME-accent) 88%, var(--MI_THEME-fg));
+	}
+}
+
+// ---- focus ring ------------------------------------------------------------
+:focus-visible {
+	// colour/width only; outline-offset is left to upstream style.scss
+	outline: var(--MI_THEME-accent) solid 2px;
+}
+
+// ---- liquid glass ----------------------------------------------------------
+// --MI-blur is set inline to `none` when the user disables blur; using it as the
+// var() primary value keeps that switch working (falls back to the glass value otherwise).
+// boot/common.ts does documentElement.style.setProperty('--MI-blur', 'none'), which the
+// browser serializes into the style attribute as `--MI-blur: none;`. Both spellings are
+// matched below (with/without space) in the blur-disabled fallback rules.
+
+// Page header: PageWithHeader > MkStickyContainer root > header wrapper > MkPageHeader root
+._pageScrollable > div > div:first-child > div:first-child {
+	background: color(from var(--MI_THEME-pageHeaderBg) srgb r g b / 0.6);
+	-webkit-backdrop-filter: var(--MI-blur, var(--bk-glass-blur));
+	backdrop-filter: var(--MI-blur, var(--bk-glass-blur));
+	// bottom border always uses the theme divider (white-ish glass edge is invisible on light themes)
+	box-shadow:
+		inset 0 1px 0 var(--bk-glass-highlight),
+		inset 0 -1px 0 var(--MI_THEME-divider);
+
+	// title: bold grotesque, slightly tight
+	div:has(> ._nowrap) {
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+}
+
+// Navbar (vertical): .body is the parent of .bottom, which holds the post button
+div:has(> div > button[data-testid="open-post-form"]) {
+	background: color(from var(--MI_THEME-navBg) srgb r g b / 0.7);
+	-webkit-backdrop-filter: var(--MI-blur, var(--bk-glass-blur));
+	backdrop-filter: var(--MI-blur, var(--bk-glass-blur));
+	box-shadow:
+		inset 0 1px 0 var(--bk-glass-highlight),
+		inset -1px 0 0 var(--MI_THEME-divider);
+}
+
+// Blur disabled by the user: translucent backgrounds would show content through, so go opaque.
+html[style*="--MI-blur: none"],
+html[style*="--MI-blur:none"] {
+	._pageScrollable > div > div:first-child > div:first-child {
+		background: color(from var(--MI_THEME-pageHeaderBg) srgb r g b / 1);
+	}
+
+	div:has(> div > button[data-testid="open-post-form"]) {
+		background: color(from var(--MI_THEME-navBg) srgb r g b / 1);
+	}
+}
+
+// ---- utilities (for future use) -------------------------------------------
+.bk-mono {
+	font-family: ui-monospace, "SF Mono", Menlo, monospace;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
