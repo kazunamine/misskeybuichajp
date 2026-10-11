@@ -7,14 +7,68 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div v-if="meta" :class="$style.root">
 	<!-- HERO -->
 	<section :class="$style.hero">
-		<img v-if="meta.backgroundImageUrl" :src="meta.backgroundImageUrl" alt="" :class="$style.heroImg"/>
-		<div v-else :class="$style.heroPattern" aria-hidden="true">
-			<span :class="$style.pCircle"></span>
-			<span :class="$style.pSquare"></span>
-			<span :class="$style.pRing"></span>
-			<span :class="$style.pBar"></span>
+		<svg :class="$style.heroArt" :viewBox="`0 0 ${ART_W} ${ART_H}`" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+			<defs>
+				<symbol id="bkg-ring" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></symbol>
+				<symbol id="bkg-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5L19 19M19 5L5 19"/></symbol>
+				<symbol id="bkg-sq" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14"/></symbol>
+				<symbol id="bkg-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4V20M4 12H20"/></symbol>
+				<symbol id="bkg-dot" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/></symbol>
+				<symbol id="bkg-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20L17 4"/></symbol>
+			</defs>
+
+			<!-- A: glyph lattice -->
+			<g>
+				<use
+					v-for="g in glyphs"
+					:key="g.key"
+					:href="`#bkg-${g.kind}`"
+					:x="g.x"
+					:y="g.y"
+					width="24"
+					height="24"
+					:opacity="g.o"
+					:class="g.blink ? $style.blink : undefined"
+						:style="g.blink ? { '--o': g.o } : undefined"
+				/>
+			</g>
+			<!-- A: solid lime blocks on the grid -->
+			<g :class="$style.artLime">
+				<rect v-for="(b, i) in blocks" :key="i" :x="b.c * ART_CELL" :y="b.r * ART_CELL" :width="b.w * ART_CELL" :height="b.h * ART_CELL"/>
+			</g>
+
+			<!-- B: chamfered octagon track -->
+			<polygon :points="TRACK" :class="$style.trackEdge"/>
+			<polygon :points="TRACK" :class="$style.trackBand"/>
+			<polygon :points="TRACK_INNER" :class="$style.trackLine"/>
+
+			<!-- C: diagonal lines, dots, crosshairs -->
+			<g :class="$style.artLine">
+				<path d="M560 40L1060 540M1100 0L1600 500"/>
+				<g v-for="(c, i) in crosshairs" :key="i" :transform="`translate(${c.x} ${c.y})`">
+					<circle r="22"/>
+					<path d="M-44 0H44M0 -44V44"/>
+				</g>
+			</g>
+			<g :class="$style.artDots">
+				<circle v-for="(d, i) in dots" :key="i" :cx="d.x" :cy="d.y" r="7"/>
+			</g>
+
+			<!-- D: mono labels -->
+			<g :class="$style.artText">
+				<text x="60" y="150">№.01</text>
+				<text x="1052" y="706">© 2026</text>
+				<text x="1572" y="120" transform="rotate(90 1572 120)">MISSKEY.BUICHA.JP</text>
+			</g>
+		</svg>
+
+		<!-- E: liquid glass panel -->
+		<div :class="[$style.glassPanel, $style.mono]" aria-hidden="true">
+			<span :class="$style.panelNo">№.01</span>
+			<span>MISSKEY.BUICHA.JP</span>
+			<span>35.6895° N, 139.6917° E</span>
+			<span>© 2026</span>
 		</div>
-		<div :class="$style.heroOverlay"></div>
 
 		<div :class="$style.heroTop">
 			<div :class="$style.brand">
@@ -221,6 +275,78 @@ import { i18n } from '@/i18n.js';
 import { instance as meta } from '@/instance.js';
 import { publicServices, inviteOnlyServices, statusUrl, portalUrl } from '@/buicha/services.js';
 
+// ---- hero art (decorative, deterministic) ----
+const ART_W = 1600;
+const ART_H = 900;
+const ART_CELL = 50;
+const ART_COLS = ART_W / ART_CELL;
+const ART_ROWS = ART_H / ART_CELL;
+
+function mulberry32(seed: number) {
+	let a = seed;
+	return () => {
+		a = (a + 0x6D2B79F5) | 0;
+		let t = Math.imul(a ^ (a >>> 15), 1 | a);
+		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+	};
+}
+
+// グリッド単位 (列, 行, 幅, 高さ)
+const blocks = [
+	{ c: 25, r: 0, w: 5, h: 3 },
+	{ c: 29, r: 6, w: 3, h: 4 },
+	{ c: 19, r: 3, w: 2, h: 2 },
+	{ c: 27, r: 11, w: 2, h: 2 },
+];
+
+// 密な領域が島状に分かれるよう、島の中心と半径を固定で持つ
+const islands = [
+	{ c: 26, r: 3, rad: 11 },
+	{ c: 14, r: 2, rad: 6 },
+	{ c: 30, r: 12, rad: 6 },
+	{ c: 21, r: 9, rad: 5 },
+	{ c: 6, r: 1, rad: 4 },
+];
+
+const glyphKinds = ['dot', 'dot', 'dot', 'dot', 'plus', 'plus', 'x', 'x', 'sq', 'ring', 'ring', 'slash'];
+
+const glyphs = (() => {
+	const rand = mulberry32(20260101);
+	const out: { key: string; kind: string; x: number; y: number; o: number; blink: boolean }[] = [];
+	for (let r = 0; r < ART_ROWS; r++) {
+		for (let c = 0; c < ART_COLS; c++) {
+			const pR = rand();
+			const pK = rand();
+			const pO = rand();
+			const pB = rand();
+			if (blocks.some(b => c >= b.c && c < b.c + b.w && r >= b.r && r < b.r + b.h)) continue;
+			let island = 0;
+			for (const i of islands) {
+				island = Math.max(island, 1 - Math.hypot(c - i.c, r - i.r) / i.rad);
+			}
+			// 右・上ほど濃く、左下 (見出し領域) と右下 (CTA) は空ける
+			const w = 0.2 + (c / ART_COLS) * 0.9 - (r / ART_ROWS) * 1.1;
+			const score = Math.min(1, island * 2.4) * Math.min(1, Math.max(0, w) * 3);
+			if (pR >= score) continue;
+			out.push({
+				key: `${c}-${r}`,
+				kind: glyphKinds[Math.floor(pK * glyphKinds.length)],
+				x: c * ART_CELL + 13,
+				y: r * ART_CELL + 13,
+				o: Math.round((0.35 + pO * 0.65) * 100) / 100,
+				blink: pB < 0.08,
+			});
+		}
+	}
+	return out;
+})();
+
+const TRACK = '880,80 1320,80 1520,280 1520,460 1320,660 1040,660 840,460 840,280';
+const TRACK_INNER = '900,110 1308,110 1490,292 1490,448 1308,630 1052,630 870,448 870,292';
+const crosshairs = [{ x: 810, y: 290 }, { x: 1350, y: 250 }, { x: 1180, y: 400 }];
+const dots = [{ x: 690, y: 170 }, { x: 930, y: 410 }, { x: 1250, y: 150 }, { x: 1500, y: 400 }];
+
 const stats = ref<Misskey.entities.StatsResponse | null>(null);
 
 if (meta.clientOptions.showActivitiesForVisitor !== false) {
@@ -314,66 +440,95 @@ function signup() {
 	padding: 24px clamp(16px, 4vw, 48px) clamp(24px, 4vw, 48px);
 }
 
-.heroImg {
+.heroArt {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	color: var(--bk-lime);
 	pointer-events: none; // 装飾レイヤ。ホイール操作を透過させる (issue #17680)
 }
 
-.heroPattern {
-	position: absolute;
-	inset: 0;
-	overflow: clip;
-	pointer-events: none; // 装飾レイヤ (issue #17680)
+.blink {
+	animation: bk-blink 5s ease-in-out infinite;
 }
 
-.pCircle {
-	position: absolute;
-	right: 8%;
-	top: 18%;
-	width: min(40vw, 380px);
-	aspect-ratio: 1;
-	border-radius: 50%;
-	background: var(--bk-lime);
+@keyframes bk-blink {
+	0%, 100% { opacity: var(--o, 1); }
+	50% { opacity: calc(var(--o, 1) * 0.25); }
 }
 
-.pSquare {
-	position: absolute;
-	right: 26%;
-	top: 44%;
-	width: min(22vw, 200px);
-	aspect-ratio: 1;
-	border: 2px solid var(--bk-lime);
+.artLime rect {
+	fill: var(--bk-lime);
 }
 
-.pRing {
-	position: absolute;
-	right: 2%;
-	top: 56%;
-	width: min(26vw, 240px);
-	aspect-ratio: 1;
-	border-radius: 50%;
-	border: 2px solid var(--bk-lime);
+.trackEdge {
+	fill: none;
+	stroke: var(--bk-lime);
+	stroke-width: 46;
+	stroke-linejoin: miter;
 }
 
-.pBar {
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 12%;
-	height: 2px;
-	background: var(--bk-lime);
-	opacity: 0.5;
+.trackBand {
+	fill: none;
+	stroke: var(--bk-ink);
+	stroke-width: 38;
+	stroke-linejoin: miter;
 }
 
-.heroOverlay {
+.trackLine {
+	fill: none;
+	stroke: var(--bk-lime);
+	stroke-width: 1.5;
+	opacity: 0.7;
+}
+
+.artLine {
+	fill: none;
+	stroke: var(--bk-paper);
+	stroke-width: 1.5;
+	opacity: 0.85;
+}
+
+.artDots circle {
+	fill: var(--bk-ink);
+	stroke: var(--bk-lime);
+	stroke-width: 2;
+}
+
+.artText {
+	fill: var(--bk-paper);
+	font-family: var(--bk-mono);
+	font-size: 15px;
+	letter-spacing: 0.1em;
+	opacity: 0.75;
+}
+
+.glassPanel {
 	position: absolute;
-	inset: 0;
-	background: rgba(14, 15, 12, 0.5);
-	pointer-events: none; // 装飾レイヤ (issue #17680)
+	left: 58%;
+	top: 24%;
+	width: min(30vw, 340px);
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 22px 24px 40px;
+	border-radius: 28px;
+	background: rgba(255, 255, 255, 0.14);
+	-webkit-backdrop-filter: blur(14px) saturate(180%);
+	backdrop-filter: blur(14px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 1px 2px rgba(0, 0, 0, 0.18), 0 6px 14px -6px rgba(0, 0, 0, 0.3);
+	color: var(--bk-white);
+	text-transform: none;
+	pointer-events: none;
+}
+
+.panelNo {
+	margin-bottom: 36px;
+	color: var(--bk-lime);
+	font-size: 22px;
+	font-weight: 700;
 }
 
 .heroTop,
@@ -924,6 +1079,26 @@ function signup() {
 	.scrollHint {
 		display: none;
 	}
+
+	// 模様は上半分の右寄りに寄せ、淡くする (見出し・CTA を優先)
+	.heroArt {
+		inset: 0 0 auto auto;
+		width: 200%;
+		height: 55%;
+		opacity: 0.5;
+	}
+
+	.glassPanel {
+		display: none;
+	}
+}
+
+@media (max-width: 860px) {
+	.glassPanel {
+		left: 52%;
+		width: 40vw;
+		padding: 14px 16px 24px;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -931,6 +1106,7 @@ function signup() {
 	.root *::before,
 	.root *::after {
 		transition: none !important;
+		animation: none !important;
 	}
 }
 </style>
